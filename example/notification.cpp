@@ -10,7 +10,9 @@
 //
 
 #include <format>
+#include <iomanip>
 #include <random>
+#include <sstream>
 
 #include "notification.h"
 
@@ -81,6 +83,8 @@ void Notification::render() {
 	if (action("Info", 4.0f / 7.0f)) { toastr.Info(message, dismissTime); } ImGui::SameLine();
 	if (action("Random Burst", 6.0f / 7.0f)) { randomBurst(); }
 
+	ImGui::End();
+
 	// render notifications at the bottom right side of the window
 	auto mainWindowSize = ImGui::GetMainViewport()->Size;
 	auto mainWindowPos = ImGui::GetMainViewport()->Pos;
@@ -93,8 +97,6 @@ void Notification::render() {
 	toastr.SetFadeOuDuration(fadeOutDuration);
 	toastr.SetGhostDuration(ghostDuration);
 	toastr.Render(anchor, Toastr::AnchorType::bottomRight);
-
-	ImGui::End();
 }
 
 
@@ -106,20 +108,75 @@ void Notification::randomBurst() {
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<int> notificationType(1, 4);
-	std::uniform_real_distribution<float> notificationDuration(2.0f, 5.0f);
+	std::uniform_int_distribution<int> messageType(0, 5);
+	std::uniform_real_distribution<float> notificationDuration(1.0f, dismissTime);
 
 	for (int i = 0; i < 8; i++) {
 		auto type = notificationType(gen);
+		auto message = messageType(gen);
 		auto duration = notificationDuration(gen);
 
 		static int id = 1;
-		auto text = std::format("Notification {}: {:.2f}s", id++, duration);
+		std::stringstream ss;
+		ss << "Notification " << id++ << ": " << std::fixed << std::setprecision(2) << duration << "s";
+		auto text = ss.str();
 
 		switch (type) {
-			case 1: toastr.Success(text, duration); break;
-			case 2: toastr.Warning(text, duration); break;
-			case 3: toastr.Error(text, duration); break;
-			case 4: toastr.Info(text, duration); break;
+			case 1:  {
+				static const char* const messages[] = {
+					"Process completed successfully",
+					"An unbelievable buzzer-beater",
+					"Task finished with zero errors",
+					"All systems go! Process done",
+					"All tests passed! Your code is officially bulletproof",
+					"Payment accepted. Enjoy your item"
+				};
+
+				toastr.Success(messages[message], duration);
+				break;
+			}
+
+			case 2: {
+				static const char* const messages[] = {
+					"Low disk space detected",
+					"High CPU temperature. Check cooling system",
+					"Connection timeout. Retrying...",
+					"Unrecognized device connected",
+					"Memory usage exceeds 85%",
+					"Security certificate expires soon"
+				};
+
+				toastr.Warning(messages[message], duration);
+				break;
+			}
+
+			case 3: {
+				static const char* const messages[] = {
+					"Resource not found",
+					"Internal server malfunction",
+					"Access Denied: Invalid permissions",
+					"Timeout: The operation took too long to complete",
+					"Memory Allocation Failure: Out of system memory",
+					"Invalid Input: Parameter format mismatch"
+				};
+
+				toastr.Error(messages[message], duration);
+				break;
+			}
+
+			case 4:  {
+				static const char* const messages[] = {
+					"System is running smoothly",
+					"Bring your own reusable bags",
+					"New update is available",
+					"50% off all fresh fruit today",
+					"Buy one, get one free on milk",
+					"Free coffee samples in aisle 4"
+				};
+
+				toastr.Info(messages[message], duration);
+				break;
+			}
 		}
 	}
 }
