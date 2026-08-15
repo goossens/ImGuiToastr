@@ -149,8 +149,8 @@ void Notification::render() {
 
 	if (ImGui::BeginPopup("CustomPaletteEditor")) {
 		if (ImGui::BeginTable("palette", 3)) {
-			auto width = ImGui::CalcTextSize("#").x * 30.0f;
-#define W() ImGui::SetNextItemWidth(width)
+			auto cellWidth = ImGui::CalcTextSize("#").x * 30.0f;
+#define W() ImGui::SetNextItemWidth(cellWidth)
 
 			ImGui::TableNextRow();
 			ImGui::TableNextColumn(); ImGui::TextUnformatted("");
@@ -285,16 +285,11 @@ void Notification::randomBurst() {
 	std::uniform_real_distribution<float> notificationDuration(1.0f, displayTime);
 
 	for (int i = 0; i < 8; i++) {
-		auto type = notificationType(gen);
-		auto message = messageType(gen);
-		auto duration = notificationDuration(gen);
+		auto randomType = notificationType(gen);
+		auto randomMessage = messageType(gen);
+		auto randomDuration = notificationDuration(gen);
 
-		static int id = 1;
-		std::stringstream ss;
-		ss << "Notification " << id++ << ": " << std::fixed << std::setprecision(2) << duration << "s";
-		auto text = ss.str();
-
-		switch (type) {
+		switch (randomType) {
 			case 1:  {
 				static const char* const messages[] = {
 					"Process completed successfully",
@@ -305,7 +300,7 @@ void Notification::randomBurst() {
 					"Payment accepted. Enjoy your item"
 				};
 
-				toastr.Success(messages[message], duration);
+				toastr.Success(messages[randomMessage], randomDuration);
 				break;
 			}
 
@@ -319,7 +314,7 @@ void Notification::randomBurst() {
 					"Security certificate expires soon"
 				};
 
-				toastr.Warning(messages[message], duration);
+				toastr.Warning(messages[randomMessage], randomDuration);
 				break;
 			}
 
@@ -333,7 +328,7 @@ void Notification::randomBurst() {
 					"Invalid Input: Parameter format mismatch"
 				};
 
-				toastr.Error(messages[message], duration);
+				toastr.Error(messages[randomMessage], randomDuration);
 				break;
 			}
 
@@ -347,7 +342,7 @@ void Notification::randomBurst() {
 					"Free coffee samples in aisle 4"
 				};
 
-				toastr.Info(messages[message], duration);
+				toastr.Info(messages[randomMessage], randomDuration);
 				break;
 			}
 		}

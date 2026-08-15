@@ -10,7 +10,7 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 ![Maintained](https://img.shields.io/maintenance/yes/2026?style=for-the-badge)
 
-# Toast-stlikeyle Notification system for Dear ImGui
+# Toast-like Notification system for Dear ImGui
 
 </div>
 
@@ -25,9 +25,7 @@ and direction and they disappear automatically after a specified amount of time.
 
 ## Features
 
-<div align="center">
 ![Screenshot](docs/ImGuiToastr.gif)
-</div>
 
 - Works on MacOS, Linux and Windows.
 - Works with latest Dear ImGui version (currently v1.92.8 && v1.92.9) and does not use deprecated functions.
