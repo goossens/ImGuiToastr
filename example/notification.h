@@ -25,17 +25,52 @@ public:
 	void render();
 
 private:
+	// palette type
+	enum class ImGuiPalette {
+		dark,
+		light
+	};
+
+	static constexpr const char* imGuiPalettes[] = {
+		"Dark",
+		"Light"
+	};
+
+	static constexpr size_t imGuiPaletteCount = sizeof(imGuiPalettes) / sizeof(*imGuiPalettes);
+
+	enum class ToastrPalette {
+		dark,
+		saturated,
+		pastel,
+		custom
+	};
+
+	static constexpr const char* toastrPalettes[] = {
+		"Dark",
+		"Saturated",
+		"Pastel",
+		"Custom"
+	};
+
+	static constexpr size_t toastrPaletteCount = sizeof(toastrPalettes) / sizeof(*toastrPalettes);
+
 	// properties
 	Toastr toastr;
+	ImGuiPalette imGuiPalette = ImGuiPalette::dark;
+	ToastrPalette toastrPalette = ToastrPalette::dark;
 	float windowRounding = 6.0f;
 	bool windowBorder = false;
 	float fadeInDuration = 0.4f;
 	float fadeOutDuration = 0.4f;
 	float ghostDuration = 0.3f;
 	char message[256] = "Test Notification";
-	float dismissTime = 4.0f;
+	float displayTime = 10.0f;
 	size_t textWidth = 30;
+	Toastr::Palette customPalette = Toastr::GetDarkPalette();
+	bool showDebugWindow = false;
 
 	// support functions
+	void editColor(Toastr::Color color);
+	void oneOfEach();
 	void randomBurst();
 };
