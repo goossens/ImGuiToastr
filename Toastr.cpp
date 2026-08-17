@@ -52,7 +52,7 @@ void Toastr::Render(ImVec2 anchorPos, AnchorType anchorType) {
 	ctx.itemSpacing = style.ItemSpacing;
 	ctx.framePadding = style.FramePadding;
 	ctx.windowPadding = style.WindowPadding;
-	ctx.buttonSize = ctx.glyphSize.y * 2.0f;
+	ctx.iconSize = ctx.glyphSize.y * 2.0f;
 
 	// update state of all notifications
 	for (auto& notification : notifications) {
@@ -178,7 +178,8 @@ float Toastr::Notification::render(const Context& ctx, float offset) {
 			ImGuiWindowFlags_NoFocusOnAppearing;
 
 		if (ctx.textWidth) {
-			auto contentSize = ctx.buttonSize + ctx.itemSpacing.x + textSize.x;
+			auto iconSize = ctx.iconVisible ? ctx.iconSize : ctx.glyphSize.y;
+			auto contentSize = iconSize + ctx.itemSpacing.x + textSize.x;
 			ImGui::SetNextWindowSize(ImVec2(contentSize + ctx.windowPadding.x * 2.0f, 0.0f));
 		}
 
@@ -198,13 +199,19 @@ float Toastr::Notification::render(const Context& ctx, float offset) {
 		auto bottomRight = topLeft + ImVec2(ImGui::GetContentRegionAvail().x, 0.0f);
 
 		// determine vertical offsets
-		float iconOffset = std::max((textSize.y - ctx.buttonSize) * 0.5f, 0.0f);
-		float textOffset = std::max((ctx.buttonSize - textSize.y) * 0.5f, 0.0f);
+		float iconOffset = std::max((textSize.y - ctx.iconSize) * 0.5f, 0.0f);
+		float textOffset = std::max((ctx.iconSize - textSize.y) * 0.5f, 0.0f);
 
 		// render icon
-		ImGui::SetCursorScreenPos(ImVec2(topLeft.x, topLeft.y + iconOffset));
-		renderIcon(ctx);
-		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, topLeft.y));
+		if (ctx.iconVisible) {
+			ImGui::SetCursorScreenPos(ImVec2(topLeft.x, topLeft.y + iconOffset));
+			renderIcon(ctx);
+			ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, topLeft.y));
+
+		} else {
+			renderBar(ctx);
+		}
+
 		ImGui::SameLine();
 
 		// render notification message
@@ -242,7 +249,7 @@ void Toastr::renderSample(NotificationType type) {
 	ctx.itemSpacing = style.ItemSpacing;
 	ctx.framePadding = style.FramePadding;
 	ctx.windowPadding = style.WindowPadding;
-	ctx.buttonSize = ctx.glyphSize.y * 2.0f;
+	ctx.iconSize = ctx.glyphSize.y * 2.0f;
 
 	// determine message
 	std::string message;
@@ -269,11 +276,18 @@ void Toastr::renderSample(NotificationType type) {
 
 	size_t messageGlyphs = std::clamp(ctx.textWidth, static_cast<size_t>(11), static_cast<size_t>(30));
 	auto messageWidth = ctx.glyphSize.x * messageGlyphs;
-	auto contentHeight = ctx.buttonSize + ctx.windowPadding.x * 2.0f;
+	auto contentHeight = ctx.iconSize + ctx.windowPadding.x * 2.0f;
 	auto contentWidth = contentHeight + ctx.itemSpacing.x + messageWidth ;
 	ImGui::BeginChild(message.c_str(), ImVec2(contentWidth, contentHeight), flags);
 
-	notification.renderIcon(ctx);
+	// render icon
+	if (ctx.iconVisible) {
+		notification.renderIcon(ctx);
+
+	} else {
+		notification.renderBar(ctx);
+	}
+
 	ImGui::SameLine();
 	ImGui::SetCursorScreenPos(ImGui::GetCursorScreenPos() + ImVec2(0.0f, ctx.glyphSize.y * 0.5f));
 	notification.renderMessage(ctx, messageWidth);
@@ -289,16 +303,16 @@ void Toastr::renderSample(NotificationType type) {
 //
 
 void Toastr::Notification::renderIcon(Context ctx) {
-	auto radius = ctx.buttonSize * 0.5f;
+	auto radius = ctx.iconSize * 0.5f;
 	auto center = ImGui::GetCursorScreenPos() + ImVec2(radius, radius);
-	ImGui::Dummy(ImVec2(ctx.buttonSize, ctx.buttonSize));
+	ImGui::Dummy(ImVec2(ctx.iconSize, ctx.iconSize));
 
 	// see if we have a custom icon renderer
 	if (ctx.iconRenderer) {
 		CustomIcon data;
 		data.drawList = ImGui::GetWindowDrawList();
 		data.center = center;
-		data.size = ImVec2(ctx.buttonSize, ctx.buttonSize);
+		data.size = ctx.iconSize;
 		data.type = type;
 		data.palette = &ctx.palette;
 		data.alpha = alpha;
@@ -362,6 +376,25 @@ void Toastr::Notification::renderIcon(Context ctx) {
 			}
 		}
 	}
+}
+
+
+//
+//	Toastr::Notification::renderBar
+//
+
+void Toastr::Notification::renderBar(Context ctx) {
+	auto pos = ImGui::GetWindowPos();
+	auto size = ImGui::GetWindowSize();
+	auto bottomRight = pos + ImVec2(ctx.glyphSize.x * 0.5f, size.y);
+
+	ImGui::GetWindowDrawList()->AddRectFilled(
+		pos,
+		bottomRight,
+		ImGui::GetColorU32(getIconBackgroundColor(ctx), alpha),
+		ctx.windowRounding);
+
+	ImGui::Dummy(ImVec2(ctx.glyphSize.x * 0.5f, ctx.iconSize));
 }
 
 

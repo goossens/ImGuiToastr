@@ -74,6 +74,8 @@ public:
 	inline float GetWindowRounding() const { return ctx.windowRounding; }
 	inline void SetWindowBorder(bool border) { ctx.windowBorder = border; }
 	inline bool HasWindowBorder() const { return ctx.windowBorder; }
+	inline void SetIconVisible(bool visible) { ctx.iconVisible = visible; }
+	inline bool IsIconVisible() const { return ctx.iconVisible; }
 	inline void SetTextWidth(size_t glyphs) { ctx.textWidth = glyphs; }
 	inline size_t GetTextWidth() const { return ctx.textWidth; }
 	inline void SetFadeInDuration(float duration) { ctx.fadeInDuration = duration; }
@@ -134,7 +136,7 @@ public:
 	struct CustomIcon {
 		ImDrawList* drawList;
 		ImVec2 center;
-		ImVec2 size;
+		float size;
 		NotificationType type;
 		const Palette* palette;
 		float alpha;
@@ -151,6 +153,7 @@ private:
 		// configuration
 		float windowRounding = 6.0f;
 		bool windowBorder = false;
+		bool iconVisible = true;
 		size_t textWidth = 0;
 		Palette palette;
 
@@ -172,7 +175,7 @@ private:
 		ImVec2 itemSpacing;
 		ImVec2 framePadding;
 		ImVec2 windowPadding;
-		float buttonSize;
+		float iconSize;
 	} ctx;
 
 	// render a sample notification
@@ -195,6 +198,7 @@ private:
 
 		// render functions
 		void renderIcon(Context ctx);
+		void renderBar(Context ctx);
 		void renderMessage(Context ctx, float width);
 		void renderButton(Context ctx, ImVec2 right);
 

@@ -197,10 +197,14 @@ void Notification::render() {
 	toastr.SetFadeOuDuration(fadeOutDuration);
 	toastr.SetGhostDuration(ghostDuration);
 
-	if (ImGui::Checkbox("Custom Renderer",&customRenderer)) {
-		if (customRenderer) {
+	if (ImGui::Checkbox("Icon Visible", &iconVisible)) {
+		toastr.SetIconVisible(iconVisible);
+	}
+
+	if (ImGui::Checkbox("Custom Icon Renderer", &customIconRenderer)) {
+		if (customIconRenderer) {
 			toastr.SetCustomIconRenderer([](Toastr::CustomIcon& data) {
-				auto radius = data.size.x * 0.5f;
+				auto radius = data.size * 0.5f;
 				ImU32 color;
 				char letter;
 
