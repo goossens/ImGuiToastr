@@ -197,9 +197,15 @@ void Notification::render() {
 	toastr.SetFadeOuDuration(fadeOutDuration);
 	toastr.SetGhostDuration(ghostDuration);
 
-	if (ImGui::Checkbox("Icon Visible", &iconVisible)) {
+	if (ImGui::Checkbox("Show Progress Bar", &progressVisible)) {
+		toastr.SetProgressVisible(progressVisible);
+	}
+
+	if (ImGui::Checkbox("Show Icon", &iconVisible)) {
 		toastr.SetIconVisible(iconVisible);
 	}
+
+	ImGui::SameLine();
 
 	if (ImGui::Checkbox("Custom Icon Renderer", &customIconRenderer)) {
 		if (customIconRenderer) {

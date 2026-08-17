@@ -63,6 +63,7 @@ private:
 	float fadeInDuration = 0.4f;
 	float fadeOutDuration = 0.4f;
 	float ghostDuration = 0.3f;
+	bool progressVisible = false;
 	bool iconVisible = true;
 	bool customIconRenderer = false;
 	char message[256] = "Test Notification";

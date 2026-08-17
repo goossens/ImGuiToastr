@@ -41,6 +41,8 @@ and direction and they disappear automatically after a specified amount of time.
 - Notifications can also be dismissed through the API.
 - When multiple notifications are active, they will be rendered as a stack starting at a specified anchor point and growing in a specified direction.
 - The built-in icons can be overridden by providing a custom icon renderer callback.
+- Icons can be hidden in which case a narrow vertical stripe is shown.
+- Optional progress bars can be shown to depict display time remaining.
 
 ## Integration
 

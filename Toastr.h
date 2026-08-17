@@ -76,6 +76,8 @@ public:
 	inline bool HasWindowBorder() const { return ctx.windowBorder; }
 	inline void SetIconVisible(bool visible) { ctx.iconVisible = visible; }
 	inline bool IsIconVisible() const { return ctx.iconVisible; }
+	inline void SetProgressVisible(bool visible) { ctx.progressVisible = visible; }
+	inline bool IsProgressVisible() const { return ctx.progressVisible; }
 	inline void SetTextWidth(size_t glyphs) { ctx.textWidth = glyphs; }
 	inline size_t GetTextWidth() const { return ctx.textWidth; }
 	inline void SetFadeInDuration(float duration) { ctx.fadeInDuration = duration; }
@@ -154,6 +156,7 @@ private:
 		float windowRounding = 6.0f;
 		bool windowBorder = false;
 		bool iconVisible = true;
+		bool progressVisible = false;
 		size_t textWidth = 0;
 		Palette palette;
 
@@ -164,7 +167,7 @@ private:
 		std::function<void(CustomIcon& data)> iconRenderer;
 
 		// per frame settings
-		float currentTime = 0.0f;
+		float now = 0.0f;
 		ImVec2 anchorPos;
 		AnchorType anchorType;
 		float stackDirection;
@@ -198,9 +201,10 @@ private:
 
 		// render functions
 		void renderIcon(Context ctx);
-		void renderBar(Context ctx);
+		void renderLeftBar(Context ctx);
 		void renderMessage(Context ctx, float width);
 		void renderButton(Context ctx, ImVec2 right);
+		void renderProgressBar(Context ctx);
 
 		//	support functions
 		void cancel(Context ctx);

@@ -10,6 +10,7 @@
 //
 
 #include <algorithm>
+#include <cmath>
 #include <sstream>
 
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
@@ -42,7 +43,7 @@ void Toastr::Render(ImVec2 anchorPos, AnchorType anchorType) {
 	ctx.stackDirection = (anchorType == AnchorType::topLeft || anchorType == AnchorType::topRight) ? 1.0f : -1.0f;
 
 	// update current time
-	ctx.currentTime += ImGui::GetIO().DeltaTime;
+	ctx.now += ImGui::GetIO().DeltaTime;
 
 	// get rendering parameters
 	auto& style = ImGui::GetStyle();
@@ -100,7 +101,7 @@ Toastr::Notification::Notification(Context& ctx, NotificationType type, const st
 	ss << "Notification" << id;
 	name = ss.str();
 
-	fadeInStart = ctx.currentTime;
+	fadeInStart = ctx.now;
 	displayStart = fadeInStart + ctx.fadeInDuration;
 	fadeOutStart = displayStart + displayTime;
 	ghostStart = fadeOutStart + ctx.fadeOutDuration;
@@ -114,16 +115,16 @@ Toastr::Notification::Notification(Context& ctx, NotificationType type, const st
 
 void Toastr::Notification::update(const Context& ctx) {
 	// update phase
-	if (ctx.currentTime >= expiredStart) {
+	if (ctx.now >= expiredStart) {
 		phase = Phase::expired;
 
-	} else if (ctx.currentTime >= ghostStart) {
+	} else if (ctx.now >= ghostStart) {
 		phase = Phase::ghost;
 
-	} else if (ctx.currentTime >= fadeOutStart) {
+	} else if (ctx.now >= fadeOutStart) {
 		phase = Phase::fadeOut;
 
-	} else if (ctx.currentTime >= displayStart) {
+	} else if (ctx.now >= displayStart) {
 		phase = Phase::display;
 
 	} else {
@@ -132,13 +133,13 @@ void Toastr::Notification::update(const Context& ctx) {
 
 	// determine transparency
 	if (phase == Phase::fadeIn) {
-		alpha = (ctx.currentTime - fadeInStart) / ctx.fadeInDuration;
+		alpha = (ctx.now - fadeInStart) / ctx.fadeInDuration;
 
 	} else if (phase == Phase::display) {
 		alpha = 1.0f;
 
 	} else if (phase == Phase::fadeOut) {
-		alpha = 1.0f - (ctx.currentTime - fadeOutStart) / ctx.fadeOutDuration;
+		alpha = 1.0f - (ctx.now - fadeOutStart) / ctx.fadeOutDuration;
 
 	} else {
 		alpha = 0.0f;
@@ -146,7 +147,7 @@ void Toastr::Notification::update(const Context& ctx) {
 
 	// update ghost height (if required)
 	if (phase == Phase::ghost) {
-		ghostHeight = (1.0f - (ctx.currentTime - ghostStart) / ctx.ghostDuration) * height;
+		ghostHeight = (1.0f - (ctx.now - ghostStart) / ctx.ghostDuration) * height;
 	}
 }
 
@@ -209,7 +210,7 @@ float Toastr::Notification::render(const Context& ctx, float offset) {
 			ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, topLeft.y));
 
 		} else {
-			renderBar(ctx);
+			renderLeftBar(ctx);
 		}
 
 		ImGui::SameLine();
@@ -220,6 +221,12 @@ float Toastr::Notification::render(const Context& ctx, float offset) {
 
 		// render button
 		renderButton(ctx, bottomRight);
+
+		// render progress bar (if required)
+		if (ctx.progressVisible) {
+			renderProgressBar(ctx);
+		}
+
 
 		// determine height of this window and stack offset for next notification
 		height = ImGui::GetWindowHeight();
@@ -285,12 +292,20 @@ void Toastr::renderSample(NotificationType type) {
 		notification.renderIcon(ctx);
 
 	} else {
-		notification.renderBar(ctx);
+		notification.renderLeftBar(ctx);
 	}
 
+	// render notification message
 	ImGui::SameLine();
 	ImGui::SetCursorScreenPos(ImGui::GetCursorScreenPos() + ImVec2(0.0f, ctx.glyphSize.y * 0.5f));
 	notification.renderMessage(ctx, messageWidth);
+
+	// render progress bar (if required)
+	if (ctx.progressVisible) {
+		notification.displayStart = ctx.now - std::fmod(ctx.now, 4.0f);
+		notification.ghostStart = notification.displayStart + 4.0f;
+		notification.renderProgressBar(ctx);
+	}
 
 	ImGui::EndChild();
 	ImGui::PopStyleColor();
@@ -380,10 +395,10 @@ void Toastr::Notification::renderIcon(Context ctx) {
 
 
 //
-//	Toastr::Notification::renderBar
+//	Toastr::Notification::renderLeftBar
 //
 
-void Toastr::Notification::renderBar(Context ctx) {
+void Toastr::Notification::renderLeftBar(Context ctx) {
 	auto pos = ImGui::GetWindowPos();
 	auto size = ImGui::GetWindowSize();
 	auto bottomRight = pos + ImVec2(ctx.glyphSize.x * 0.5f, size.y);
@@ -433,12 +448,38 @@ void Toastr::Notification::renderButton(Context ctx, ImVec2 right) {
 
 
 //
+//	Toastr::Notification::renderProgressBar
+//
+
+void Toastr::Notification::renderProgressBar(Context ctx) {
+	auto pos = ImGui::GetWindowPos();
+	auto size = ImGui::GetWindowSize();
+	float progress;
+
+	if (phase == Phase::fadeIn) {
+		progress = 1.0f;
+
+	} else if (phase == Phase::display) {
+		progress = (ghostStart - ctx.now) / (ghostStart - displayStart);
+
+	} else {
+		progress = 0.0f;
+	}
+
+	auto right = ImVec2(pos.x + progress * size.x, pos.y + size.y);
+	auto left = ImVec2(pos.x, right.y - ctx.highDpiScale * 2.0f);
+	auto color = ImGui::GetColorU32(getIconBackgroundColor(ctx), alpha * 0.5f);
+	ImGui::GetWindowDrawList()->AddRectFilled(left, right, color, ctx.windowRounding);
+}
+
+
+//
 //	Toastr::Notification::cancel
 //
 
 void Toastr::Notification::cancel(Context ctx) {
 	phase = Phase::ghost;
-	ghostStart = ctx.currentTime;
+	ghostStart = ctx.now;
 	expiredStart = ghostStart + ctx.ghostDuration;
 }
 
