@@ -9,7 +9,6 @@
 //	Include files
 //
 
-#include <format>
 #include <iomanip>
 #include <random>
 #include <sstream>
@@ -211,8 +210,8 @@ void Notification::render() {
 		if (customIconRenderer) {
 			toastr.SetCustomIconRenderer([](Toastr::CustomIcon& data) {
 				auto radius = data.size * 0.5f;
-				ImU32 color;
-				char letter;
+				ImU32 color = 0;
+				char letter = ' ';
 
 				switch (data.type) {
 					case Toastr::NotificationType::success:
