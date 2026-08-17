@@ -13,6 +13,7 @@
 //
 
 #include <array>
+#include <functional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -121,6 +122,29 @@ public:
 	inline void RenderErrorSample() { renderSample(NotificationType::error); }
 	inline void RenderInfoSample() { renderSample(NotificationType::info); }
 
+	// notification types
+	enum class NotificationType : char {
+		success,
+		warning,
+		error,
+		info
+	};
+
+	// custom icon support
+	struct CustomIcon {
+		ImDrawList* drawList;
+		ImVec2 center;
+		ImVec2 size;
+		NotificationType type;
+		const Palette* palette;
+		float alpha;
+	};
+
+	// set custom icon rendering callback
+	inline void SetCustomIconRenderer(std::function<void(CustomIcon& data)> callback) { ctx.iconRenderer = callback; }
+	inline void ClearCustomIconRenderer() { ctx.iconRenderer = nullptr; }
+	inline bool HasCustomIconRenderer() { return ctx.iconRenderer != nullptr; }
+
 private:
 	// context = configuration + per frame settings
 	struct Context {
@@ -133,6 +157,8 @@ private:
 		float fadeInDuration = 0.4f;
 		float fadeOutDuration = 0.4f;
 		float ghostDuration = 0.3f;
+
+		std::function<void(CustomIcon& data)> iconRenderer;
 
 		// per frame settings
 		float currentTime = 0.0f;
@@ -148,14 +174,6 @@ private:
 		ImVec2 windowPadding;
 		float buttonSize;
 	} ctx;
-
-	// notification types
-	enum class NotificationType : char {
-		success,
-		warning,
-		error,
-		info
-	};
 
 	// render a sample notification
 	void renderSample(NotificationType type);

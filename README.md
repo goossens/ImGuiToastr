@@ -38,7 +38,9 @@ and direction and they disappear automatically after a specified amount of time.
 - Provides configuration option for window decorations and timings.
 - Has configurable fade-in, display, fade-out and ghost timings (see life cycle of a notification below).
 - By rolling over a notification, a close box appear to delete the notification before the time is up.
+- Notifications can also be dismissed through the API.
 - When multiple notifications are active, they will be rendered as a stack starting at a specified anchor point and growing in a specified direction.
+- The built-in icons can be overridden by providing a custom icon renderer callback.
 
 ## Integration
 

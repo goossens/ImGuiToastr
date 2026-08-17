@@ -291,61 +291,75 @@ void Toastr::renderSample(NotificationType type) {
 void Toastr::Notification::renderIcon(Context ctx) {
 	auto radius = ctx.buttonSize * 0.5f;
 	auto center = ImGui::GetCursorScreenPos() + ImVec2(radius, radius);
-	auto drawList = ImGui::GetWindowDrawList();
 	ImGui::Dummy(ImVec2(ctx.buttonSize, ctx.buttonSize));
 
-	drawList->AddCircleFilled(center, radius, ImGui::GetColorU32(getIconBackgroundColor(ctx), alpha));
-	auto color = ImGui::GetColorU32(ctx.palette.get(Color::iconColor), alpha);
-	auto width = ctx.highDpiScale * 2.0f;
+	// see if we have a custom icon renderer
+	if (ctx.iconRenderer) {
+		CustomIcon data;
+		data.drawList = ImGui::GetWindowDrawList();
+		data.center = center;
+		data.size = ImVec2(ctx.buttonSize, ctx.buttonSize);
+		data.type = type;
+		data.palette = &ctx.palette;
+		data.alpha = alpha;
+		ctx.iconRenderer(data);
 
-	switch (type) {
-		case NotificationType::success: {
-			auto left = center - ImVec2(0.55f * radius, 0.0f);
-			auto bottom = center + ImVec2(-0.1f * radius, 0.5f * radius);
-			auto right = center + ImVec2(0.45f * radius, -0.4f * radius);
+	} else {
+		auto drawList = ImGui::GetWindowDrawList();
 
-			drawList->AddLine(left, bottom, color, width);
-			drawList->AddLine(bottom, right, color, width);
-			break;
-		}
+		drawList->AddCircleFilled(center, radius, ImGui::GetColorU32(getIconBackgroundColor(ctx), alpha));
+		auto color = ImGui::GetColorU32(ctx.palette.get(Color::iconColor), alpha);
+		auto width = ctx.highDpiScale * 2.0f;
 
-		case NotificationType::warning: {
-			auto left = center.x - 0.25f * width;
-			auto triangleTop = ImVec2(center.x, center.y - 0.6f * radius);
-			auto triangleLeft = ImVec2(center.x - 0.55f * radius, center.y + 0.5f * radius);
-			auto triangleRight = ImVec2(center.x + 0.55f * radius, center.y + 0.5f * radius);
-			auto startLine = ImVec2(left, center.y - 0.25f * radius);
-			auto endLine = ImVec2(left, center.y + 0.1f * radius);
-			auto startDot = ImVec2(left, center.y + 0.3f * radius);
-			auto endDot = startDot - ImVec2(0.0f, width);
+		switch (type) {
+			case NotificationType::success: {
+				auto left = center - ImVec2(0.55f * radius, 0.0f);
+				auto bottom = center + ImVec2(-0.1f * radius, 0.5f * radius);
+				auto right = center + ImVec2(0.45f * radius, -0.4f * radius);
 
-			drawList->AddTriangle(triangleLeft, triangleTop, triangleRight, color, width);
-			drawList->AddLine(startLine, endLine, color, width);
-			drawList->AddLine(startDot, endDot, color, width);
-			break;
-		}
+				drawList->AddLine(left, bottom, color, width);
+				drawList->AddLine(bottom, right, color, width);
+				break;
+			}
 
-		case NotificationType::error: {
-			auto offset = radius * 0.4f;
-			auto startLine = center - ImVec2(offset, offset);
-			auto endLine = center + ImVec2(offset, offset);
+			case NotificationType::warning: {
+				auto left = center.x - 0.25f * width;
+				auto triangleTop = ImVec2(center.x, center.y - 0.6f * radius);
+				auto triangleLeft = ImVec2(center.x - 0.55f * radius, center.y + 0.5f * radius);
+				auto triangleRight = ImVec2(center.x + 0.55f * radius, center.y + 0.5f * radius);
+				auto startLine = ImVec2(left, center.y - 0.25f * radius);
+				auto endLine = ImVec2(left, center.y + 0.1f * radius);
+				auto startDot = ImVec2(left, center.y + 0.3f * radius);
+				auto endDot = startDot - ImVec2(0.0f, width);
 
-			drawList->AddCircle(center, radius * 0.6f, color, 0, width);
-			drawList->AddLine(startLine, endLine, color, width);
-			break;
-		}
+				drawList->AddTriangle(triangleLeft, triangleTop, triangleRight, color, width);
+				drawList->AddLine(startLine, endLine, color, width);
+				drawList->AddLine(startDot, endDot, color, width);
+				break;
+			}
 
-		case NotificationType::info: {
-			auto left = center.x - 0.25f * width;
-			auto startDot = ImVec2(left, center.y - 0.35f * radius);
-			auto endDot = startDot + ImVec2(0.0f, width);
-			auto startI = ImVec2(left, center.y - 0.15f * radius);
-			auto endI = ImVec2(left, center.y + 0.3f * radius);
+			case NotificationType::error: {
+				auto offset = radius * 0.4f;
+				auto startLine = center - ImVec2(offset, offset);
+				auto endLine = center + ImVec2(offset, offset);
 
-			drawList->AddCircle(center, radius * 0.6f, color, 0, width);
-			drawList->AddLine(startDot, endDot, color, width);
-			drawList->AddLine(startI, endI, color, width);
-			break;
+				drawList->AddCircle(center, radius * 0.6f, color, 0, width);
+				drawList->AddLine(startLine, endLine, color, width);
+				break;
+			}
+
+			case NotificationType::info: {
+				auto left = center.x - 0.25f * width;
+				auto startDot = ImVec2(left, center.y - 0.35f * radius);
+				auto endDot = startDot + ImVec2(0.0f, width);
+				auto startI = ImVec2(left, center.y - 0.15f * radius);
+				auto endI = ImVec2(left, center.y + 0.3f * radius);
+
+				drawList->AddCircle(center, radius * 0.6f, color, 0, width);
+				drawList->AddLine(startDot, endDot, color, width);
+				drawList->AddLine(startI, endI, color, width);
+				break;
+			}
 		}
 	}
 }

@@ -197,6 +197,49 @@ void Notification::render() {
 	toastr.SetFadeOuDuration(fadeOutDuration);
 	toastr.SetGhostDuration(ghostDuration);
 
+	if (ImGui::Checkbox("Custom Renderer",&customRenderer)) {
+		if (customRenderer) {
+			toastr.SetCustomIconRenderer([](Toastr::CustomIcon& data) {
+				auto radius = data.size.x * 0.5f;
+				ImU32 color;
+				char letter;
+
+				switch (data.type) {
+					case Toastr::NotificationType::success:
+						color = ImGui::GetColorU32(data.palette->get(Toastr::Color::successIcon), data.alpha * 0.5f);
+						letter = 'S';
+						break;
+
+					case Toastr::NotificationType::warning:
+						color = ImGui::GetColorU32(data.palette->get(Toastr::Color::warningIcon), data.alpha * 0.5f);
+						letter = 'W';
+						break;
+
+					case Toastr::NotificationType::error:
+						color = ImGui::GetColorU32(data.palette->get(Toastr::Color::errorIcon), data.alpha * 0.5f);
+						letter = 'E';
+						break;
+
+					case Toastr::NotificationType::info:
+						color = ImGui::GetColorU32(data.palette->get(Toastr::Color::infoIcon), data.alpha * 0.5f);
+						letter = 'I';
+						break;
+				}
+
+				data.drawList->AddCircleFilled(data.center, radius, color);
+				ImGui::PushFont(nullptr, radius);
+				auto textSize = ImGui::CalcTextSize("#");
+				auto pos = data.center - ImVec2(textSize.x * 0.5f, textSize.y * 0.5f);
+				color = ImGui::GetColorU32(data.palette->get(Toastr::Color::iconColor), data.alpha);
+				data.drawList->AddText(pos, color, &letter, (&letter + 1));
+				ImGui::PopFont();
+			});
+
+		} else {
+			toastr.ClearCustomIconRenderer();
+		}
+	}
+
 	// show examples
 	ImGui::Spacing();
 	ImGui::SeparatorText("Example Notification:");

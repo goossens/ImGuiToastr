@@ -63,6 +63,7 @@ private:
 	float fadeInDuration = 0.4f;
 	float fadeOutDuration = 0.4f;
 	float ghostDuration = 0.3f;
+	bool customRenderer = false;
 	char message[256] = "Test Notification";
 	float displayTime = 10.0f;
 	size_t textWidth = 30;
