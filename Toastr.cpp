@@ -74,14 +74,30 @@ void Toastr::Render(ImVec2 anchorPos, AnchorType anchorType) {
 
 
 //
+//	Toastr::Delete
+//
+
+void Toastr::Delete(size_t id) {
+	for (auto& notification : notifications) {
+		if (notification.id == id) {
+			notification.cancel(ctx);
+		}
+	}
+}
+
+
+//
 //	Toastr::Notification::Notification
 //
 
 Toastr::Notification::Notification(Context& ctx, NotificationType type, const std::string_view& message, float displayTime)
 	: type(type), message(message) {
 
+	static size_t nextID = 1;
+	id = nextID++;
+
 	std::stringstream ss;
-	ss << "Notification" << id++;
+	ss << "Notification" << id;
 	name = ss.str();
 
 	fadeInStart = ctx.currentTime;
@@ -360,12 +376,23 @@ void Toastr::Notification::renderButton(Context ctx, ImVec2 right) {
 	// (can't use ImGui::IsWindowHovered as it won't let ImGui::Button catch clicks for some reason)
 	if (ImGui::GetCurrentContext()->HoveredWindow == ImGui::GetCurrentContext()->CurrentWindow) {
 		if (ImGui::Button("x")) {
-			expiredStart = ctx.currentTime;
+			cancel(ctx);
 		}
 
 	} else {
 		ImGui::Dummy(ImVec2(buttonWidth, buttonWidth));
 	}
+}
+
+
+//
+//	Toastr::Notification::cancel
+//
+
+void Toastr::Notification::cancel(Context ctx) {
+	phase = Phase::ghost;
+	ghostStart = ctx.currentTime;
+	expiredStart = ghostStart + ctx.ghostDuration;
 }
 
 

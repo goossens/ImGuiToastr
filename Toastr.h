@@ -37,20 +37,24 @@ public:
 	Toastr();
 
 	// add a notifications (by type)
-	inline void Success(const std::string_view& message, float displayTime=4.0f) {
-		notifications.emplace_back(ctx, NotificationType::success, message, displayTime);
+	inline size_t Success(const std::string_view& message, float displayTime=4.0f) {
+		auto& notification = notifications.emplace_back(ctx, NotificationType::success, message, displayTime);
+		return notification.id;
 	}
 
-	inline void Warning(const std::string_view& message, float displayTime=4.0f) {
-		notifications.emplace_back(ctx, NotificationType::warning, message, displayTime);
+	inline size_t Warning(const std::string_view& message, float displayTime=4.0f) {
+		auto& notification = notifications.emplace_back(ctx, NotificationType::warning, message, displayTime);
+		return notification.id;
 	}
 
-	inline void Error(const std::string_view& message, float displayTime=4.0f) {
-		notifications.emplace_back(ctx, NotificationType::error, message, displayTime);
+	inline size_t Error(const std::string_view& message, float displayTime=4.0f) {
+		auto& notification = notifications.emplace_back(ctx, NotificationType::error, message, displayTime);
+		return notification.id;
 	}
 
-	inline void Info(const std::string_view& message, float displayTime=4.0f) {
-		notifications.emplace_back(ctx, NotificationType::info, message, displayTime);
+	inline size_t Info(const std::string_view& message, float displayTime=4.0f) {
+		auto& notification = notifications.emplace_back(ctx, NotificationType::info, message, displayTime);
+		return notification.id;
 	}
 
 	// anchor types
@@ -77,6 +81,12 @@ public:
 	inline float GetFadeOutDuration() const { return ctx.fadeOutDuration; }
 	inline void SetGhostDuration(float duration) { ctx.ghostDuration = duration; }
 	inline float GetGhostDuration() const { return ctx.ghostDuration; }
+
+	// delete specified notification (does nothing if specified ID is already gone)
+	void Delete(size_t id);
+
+	// delete all notifications
+	inline void DeleteAll() { notifications.clear(); }
 
 	// palette support
 	enum class Color : char {
@@ -171,12 +181,15 @@ private:
 		void renderButton(Context ctx, ImVec2 right);
 
 		//	support functions
+		void cancel(Context ctx);
 		ImVec2 getTextSize(Context ctx);
 		ImVec2 getWindowPivot(Context ctx);
 		ImU32 getBackgroundColor(Context ctx);
 		ImU32 getIconBackgroundColor(Context ctx);
 
 		// properties
+		size_t id;
+
 		enum class Phase : char {
 			fadeIn,
 			display,
@@ -185,7 +198,6 @@ private:
 			expired
 		};
 
-		static inline size_t id = 1;
 		NotificationType type;
 		std::string name;
 		Phase phase;

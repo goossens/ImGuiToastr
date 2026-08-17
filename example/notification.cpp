@@ -207,25 +207,29 @@ void Notification::render() {
 	toastr.RenderErrorSample(); ImGui::SameLine();
 	toastr.RenderInfoSample();
 
+	// add notification messages
 	ImGui::Spacing();
-	ImGui::SeparatorText("Notification Details");
+	ImGui::SeparatorText("Add Notifications:");
 	ImGui::Spacing();
 
 	ImGui::InputText("Message", message, sizeof(message));
 	ImGui::SliderFloat("Display Time", &displayTime, 0.0f, 60.0f);
 	ImGui::PopItemWidth();
 
-	// add notification messages
+	if (action("Success", 2.0f / 7.0f)) { lastNotice = toastr.Success(message, displayTime); } ImGui::SameLine();
+	if (action("Warning", 1.0f / 7.0f)) { lastNotice = toastr.Warning(message, displayTime); } ImGui::SameLine();
+	if (action("Error", 0.0f / 7.0f)) { lastNotice = toastr.Error(message, displayTime); } ImGui::SameLine();
+	if (action("Info", 4.0f / 7.0f)) { lastNotice = toastr.Info(message, displayTime); }
+	if (ImGui::Button("One of Each")) { oneOfEach(); } ImGui::SameLine();
+	if (ImGui::Button("Random Burst")) { randomBurst(); }
+
+	// remove notification messages
 	ImGui::Spacing();
-	ImGui::SeparatorText("Add Notification:");
+	ImGui::SeparatorText("Remove Notifications:");
 	ImGui::Spacing();
 
-	if (action("Success", 2.0f / 7.0f)) { toastr.Success(message, displayTime); } ImGui::SameLine();
-	if (action("Warning", 1.0f / 7.0f)) { toastr.Warning(message, displayTime); } ImGui::SameLine();
-	if (action("Error", 0.0f / 7.0f)) { toastr.Error(message, displayTime); } ImGui::SameLine();
-	if (action("Info", 4.0f / 7.0f)) { toastr.Info(message, displayTime); } ImGui::SameLine();
-	if (action("One of Each", 6.0f / 7.0f)) { oneOfEach(); } ImGui::SameLine();
-	if (action("Random Burst", 6.0f / 7.0f)) { randomBurst(); }
+	if (ImGui::Button("Cancel Last")) { toastr.Delete(lastNotice); } ImGui::SameLine();
+	if (ImGui::Button("Delete All")) { toastr.DeleteAll(); }
 
 	ImGui::End();
 
@@ -266,10 +270,10 @@ void Notification::editColor(Toastr::Color color) {
 //
 
 void Notification::oneOfEach() {
-	toastr.Success("Success", displayTime);
-	toastr.Warning("Warning", displayTime);
-	toastr.Error("Error", displayTime);
-	toastr.Info("Info", displayTime);
+	lastNotice = toastr.Success("Success", displayTime);
+	lastNotice = toastr.Warning("Warning", displayTime);
+	lastNotice = toastr.Error("Error", displayTime);
+	lastNotice = toastr.Info("Info", displayTime);
 }
 
 
@@ -300,7 +304,7 @@ void Notification::randomBurst() {
 					"Payment accepted. Enjoy your item"
 				};
 
-				toastr.Success(messages[randomMessage], randomDuration);
+				lastNotice = toastr.Success(messages[randomMessage], randomDuration);
 				break;
 			}
 
@@ -314,7 +318,7 @@ void Notification::randomBurst() {
 					"Security certificate expires soon"
 				};
 
-				toastr.Warning(messages[randomMessage], randomDuration);
+				lastNotice = toastr.Warning(messages[randomMessage], randomDuration);
 				break;
 			}
 
@@ -328,7 +332,7 @@ void Notification::randomBurst() {
 					"Invalid Input: Parameter format mismatch"
 				};
 
-				toastr.Error(messages[randomMessage], randomDuration);
+				lastNotice = toastr.Error(messages[randomMessage], randomDuration);
 				break;
 			}
 
@@ -342,7 +346,7 @@ void Notification::randomBurst() {
 					"Free coffee samples in aisle 4"
 				};
 
-				toastr.Info(messages[randomMessage], randomDuration);
+				lastNotice = toastr.Info(messages[randomMessage], randomDuration);
 				break;
 			}
 		}

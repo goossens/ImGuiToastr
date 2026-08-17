@@ -67,8 +67,8 @@ This will allow people to quickly find a version of the widgets compatible with 
 
 ## Issues
 
-If you are interested in using this Text Editor, steal parts of the code, make
-suggestions for improvements or contribute fixes/enhancements, be my guest as this
+If you are interested in using this Toast-Style notification system, steal parts of the code,
+make suggestions for improvements or contribute fixes/enhancements, be my guest as this
 repository is released under the MIT license. For people that want to contribute,
 [Contributing Guidelines](CONTRIBUTING) and a [Code of Conduct](CODE_OF_CONDUCT.md)
 are available. If you find any problems or want to make a suggestion for improvement, please
@@ -78,7 +78,7 @@ are available. If you find any problems or want to make a suggestion for improve
 
 This version of ImGuiToastr was written from scratch by [Johan A. Goossens](https://github.com/goossens)
 and if you end up using (parts of) this repository, a shoutout or Github star would be appreciated.
-Other notification systems exist on Git but many of them have not been maintained.
+Other notification systems exist on Git but many of them have not been maintained for a bit.
 
 Thank you to [Omar Cornut](https://github.com/ocornut/imgui) for creating Dear ImGui
 in the first place. Without you, this notification system would not exist.

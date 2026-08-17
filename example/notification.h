@@ -68,6 +68,7 @@ private:
 	size_t textWidth = 30;
 	Toastr::Palette customPalette = Toastr::GetDarkPalette();
 	bool showDebugWindow = false;
+	size_t lastNotice = 0;
 
 	// support functions
 	void editColor(Toastr::Color color);
