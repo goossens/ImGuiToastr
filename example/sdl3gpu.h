@@ -22,7 +22,6 @@
 #include "imgui_impl_sdlgpu3.h"
 
 #include "notification.h"
-#include "dejavu.h"
 
 
 //
@@ -92,13 +91,6 @@ int example() {
 	initInfo.ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat(gpuDevice, window);
 	initInfo.MSAASamples = SDL_GPU_SAMPLECOUNT_1;
 	ImGui_ImplSDLGPU3_Init(&initInfo);
-
-	// setup our font
-	ImFontConfig config;
-	std::copy_n("DejaVu", 7, config.Name);
-	config.FontDataOwnedByAtlas = false;
-	io.Fonts->Clear();
-	io.Fonts->AddFontFromMemoryCompressedTTF(static_cast<const void*>(&dejavu), dejavuSize, 16.0f, &config);
 
 	// main loop
 	Notification notification;

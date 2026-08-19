@@ -22,7 +22,6 @@ file(GLOB SOURCES CONFIGURE_DEPENDS ../*.cpp ../*.h)
 add_executable(example
 	${SOURCES}
 	notification.cpp
-	dejavu.cpp
 	main.cpp)
 
 if(D3D11)
