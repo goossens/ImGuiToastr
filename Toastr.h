@@ -34,6 +34,12 @@
 
 class Toastr {
 public:
+	// singleton implementation
+	static inline Toastr& Instance() {
+		static Toastr singleton;
+		return singleton;
+	}
+
 	// constructor
 	Toastr();
 

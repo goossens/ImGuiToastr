@@ -51,6 +51,7 @@ in any Dear ImGui context by doing the following:
 
 - Include the Toastr.cpp and Toastr.h files in your project.
 - Instantiate a Toastr object and configure it to your taste.
+- Alternatively, use the singleton pattern if you only need one toaster for your application (see Instance() member function).
 - Call Render ones per Dear ImGui frame to render the stack of active notifications.
 - Use the Success, Warning, Error and Info methods to add notifications.
 
