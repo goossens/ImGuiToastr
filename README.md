@@ -81,11 +81,11 @@ are available. If you find any problems or want to make a suggestion for improve
 
 ## Credits
 
-This version of ImGuiToastr was written from scratch by [Johan A. Goossens](https://github.com/goossens)
+ImGuiToastr was written from scratch by [Johan A. Goossens](https://github.com/goossens)
 and if you end up using (parts of) this repository, a shoutout or Github star would be appreciated.
 Other notification systems exist on Git but many of them have not been maintained for a bit.
 
-Thank you to [Omar Cornut](https://github.com/ocornut/imgui) for creating Dear ImGui
+A big thank you to [Omar Cornut](https://github.com/ocornut/imgui) for creating Dear ImGui
 in the first place. Without you, this notification system would not exist.
 
 ## License
