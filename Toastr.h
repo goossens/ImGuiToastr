@@ -200,7 +200,7 @@ private:
 		void update(const Context& ctx);
 
 		// render a notification
-		float render(const Context& ctx, float offset);
+		void render(const Context& ctx, float& offset);
 
 	private:
 		friend class Toastr;

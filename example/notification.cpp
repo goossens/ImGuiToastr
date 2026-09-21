@@ -55,7 +55,7 @@ static bool action(const char* title, float hue) {
 	ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4) ImColor::HSV(hue, 0.6f, 0.6f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4) ImColor::HSV(hue, 0.7f, 0.7f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4) ImColor::HSV(hue, 0.8f, 0.8f));
-	bool result = ImGui::Button(title);
+	const bool result = ImGui::Button(title);
 	ImGui::PopStyleColor(4);
 	return result;
 }
@@ -67,7 +67,7 @@ static bool action(const char* title, float hue) {
 
 void Notification::render() {
 	// start window
-	ImGuiWindowFlags windowFlags =
+	const ImGuiWindowFlags windowFlags =
 		ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoBringToFrontOnFocus;
 
@@ -148,7 +148,7 @@ void Notification::render() {
 
 	if (ImGui::BeginPopup("CustomPaletteEditor")) {
 		if (ImGui::BeginTable("palette", 3)) {
-			auto cellWidth = ImGui::CalcTextSize("#").x * 30.0f;
+			const auto cellWidth = ImGui::CalcTextSize("#").x * 30.0f;
 #define W() ImGui::SetNextItemWidth(cellWidth)
 
 			ImGui::TableNextRow();
@@ -290,8 +290,8 @@ void Notification::render() {
 		ImGui::ShowMetricsWindow();
 	}
 	// render notifications at the bottom right side of the window
-	auto mainWindowSize = ImGui::GetMainViewport()->Size;
-	auto mainWindowPos = ImGui::GetMainViewport()->Pos;
+	const auto mainWindowSize = ImGui::GetMainViewport()->Size;
+	const auto mainWindowPos = ImGui::GetMainViewport()->Pos;
 	auto anchor = mainWindowPos + mainWindowSize - ImGui::GetStyle().ItemSpacing;
 
 	// render notifications

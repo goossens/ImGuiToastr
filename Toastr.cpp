@@ -46,7 +46,7 @@ void Toastr::Render(ImVec2 anchorPos, AnchorType anchorType) {
 	ctx.now += ImGui::GetIO().DeltaTime;
 
 	// get rendering parameters
-	auto& style = ImGui::GetStyle();
+	const auto& style = ImGui::GetStyle();
 	ctx.font = ImGui::GetFont();
 	ctx.glyphSize = ImGui::CalcTextSize("#");
 	ctx.highDpiScale = style.FontScaleDpi;
@@ -69,7 +69,7 @@ void Toastr::Render(ImVec2 anchorPos, AnchorType anchorType) {
 	float offset = 0.0f;
 
 	for (auto& notification : notifications) {
-		offset = notification.render(ctx, offset);
+		notification.render(ctx, offset);
 	}
 }
 
@@ -156,7 +156,7 @@ void Toastr::Notification::update(const Context& ctx) {
 //	Toastr::Notification::render
 //
 
-float Toastr::Notification::render(const Context& ctx, float offset) {
+void Toastr::Notification::render(const Context& ctx, float& offset) {
 	if (phase == Notification::Phase::ghost) {
 		// ghost windows don't have visible components; they just shrink
 		// we just calculate the stack offset for the next notification
@@ -164,14 +164,14 @@ float Toastr::Notification::render(const Context& ctx, float offset) {
 
 	} else {
 		// determine text size
-		auto textSize = getTextSize(ctx);
+		const auto textSize = getTextSize(ctx);
 
 		// determine notification window position and pivot point
-		auto windowPos = ImVec2(ctx.anchorPos.x, ctx.anchorPos.y + offset);
-		ImVec2 windowPivot = getWindowPivot(ctx);
+		const auto windowPos = ImVec2(ctx.anchorPos.x, ctx.anchorPos.y + offset);
+		const ImVec2 windowPivot = getWindowPivot(ctx);
 
 		// determine notification window flags and size
-		ImGuiWindowFlags windowFlags =
+		const ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoSavedSettings |
 			ImGuiWindowFlags_NoDecoration |
 			ImGuiWindowFlags_NoNav |
@@ -179,8 +179,8 @@ float Toastr::Notification::render(const Context& ctx, float offset) {
 			ImGuiWindowFlags_NoFocusOnAppearing;
 
 		if (ctx.textWidth) {
-			auto iconSize = ctx.iconVisible ? ctx.iconSize : ctx.glyphSize.y;
-			auto contentSize = iconSize + ctx.itemSpacing.x + textSize.x;
+			const auto iconSize = ctx.iconVisible ? ctx.iconSize : ctx.glyphSize.y;
+			const auto contentSize = iconSize + ctx.itemSpacing.x + textSize.x;
 			ImGui::SetNextWindowSize(ImVec2(contentSize + ctx.windowPadding.x * 2.0f, 0.0f));
 		}
 
@@ -196,8 +196,8 @@ float Toastr::Notification::render(const Context& ctx, float offset) {
 		ImGui::BringWindowToDisplayFront(ImGui::GetCurrentWindow());
 
 		// determine top-right location of window
-		auto topLeft = ImGui::GetCursorScreenPos();
-		auto bottomRight = topLeft + ImVec2(ImGui::GetContentRegionAvail().x, 0.0f);
+		const auto topLeft = ImGui::GetCursorScreenPos();
+		const auto bottomRight = topLeft + ImVec2(ImGui::GetContentRegionAvail().x, 0.0f);
 
 		// determine vertical offsets
 		float iconOffset = std::max((textSize.y - ctx.iconSize) * 0.5f, 0.0f);
@@ -227,7 +227,6 @@ float Toastr::Notification::render(const Context& ctx, float offset) {
 			renderProgressBar(ctx);
 		}
 
-
 		// determine height of this window and stack offset for next notification
 		height = ImGui::GetWindowHeight();
 		offset += ctx.stackDirection * (height + ctx.itemSpacing.y);
@@ -237,9 +236,6 @@ float Toastr::Notification::render(const Context& ctx, float offset) {
 		ImGui::PopStyleColor();
 		ImGui::PopStyleVar(3);
 	}
-
-	// return the offset for the next notification window
-	return offset;
 }
 
 
@@ -251,7 +247,7 @@ void Toastr::renderSample(NotificationType type) {
 	// update context
 	ctx.font = ImGui::GetFont();
 	ctx.glyphSize = ImGui::CalcTextSize("#");
-	auto& style = ImGui::GetStyle();
+	const auto& style = ImGui::GetStyle();
 	ctx.highDpiScale = style.FontScaleDpi;
 	ctx.itemSpacing = style.ItemSpacing;
 	ctx.framePadding = style.FramePadding;
@@ -318,8 +314,8 @@ void Toastr::renderSample(NotificationType type) {
 //
 
 void Toastr::Notification::renderIcon(Context ctx) {
-	auto radius = ctx.iconSize * 0.5f;
-	auto center = ImGui::GetCursorScreenPos() + ImVec2(radius, radius);
+	const auto radius = ctx.iconSize * 0.5f;
+	const auto center = ImGui::GetCursorScreenPos() + ImVec2(radius, radius);
 	ImGui::Dummy(ImVec2(ctx.iconSize, ctx.iconSize));
 
 	// see if we have a custom icon renderer
@@ -352,7 +348,7 @@ void Toastr::Notification::renderIcon(Context ctx) {
 			}
 
 			case NotificationType::warning: {
-				auto left = center.x - 0.25f * width;
+				const auto left = center.x - 0.25f * width;
 				auto triangleTop = ImVec2(center.x, center.y - 0.6f * radius);
 				auto triangleLeft = ImVec2(center.x - 0.55f * radius, center.y + 0.5f * radius);
 				auto triangleRight = ImVec2(center.x + 0.55f * radius, center.y + 0.5f * radius);
@@ -368,9 +364,9 @@ void Toastr::Notification::renderIcon(Context ctx) {
 			}
 
 			case NotificationType::error: {
-				auto offset = radius * 0.4f;
-				auto startLine = center - ImVec2(offset, offset);
-				auto endLine = center + ImVec2(offset, offset);
+				const auto offset = radius * 0.4f;
+				const auto startLine = center - ImVec2(offset, offset);
+				const auto endLine = center + ImVec2(offset, offset);
 
 				drawList->AddCircle(center, radius * 0.6f, color, 0, width);
 				drawList->AddLine(startLine, endLine, color, width);
@@ -378,11 +374,11 @@ void Toastr::Notification::renderIcon(Context ctx) {
 			}
 
 			case NotificationType::info: {
-				auto left = center.x - 0.25f * width;
-				auto startDot = ImVec2(left, center.y - 0.35f * radius);
-				auto endDot = startDot + ImVec2(0.0f, width);
-				auto startI = ImVec2(left, center.y - 0.15f * radius);
-				auto endI = ImVec2(left, center.y + 0.3f * radius);
+				const auto left = center.x - 0.25f * width;
+				const auto startDot = ImVec2(left, center.y - 0.35f * radius);
+				const auto endDot = startDot + ImVec2(0.0f, width);
+				const auto startI = ImVec2(left, center.y - 0.15f * radius);
+				const auto endI = ImVec2(left, center.y + 0.3f * radius);
 
 				drawList->AddCircle(center, radius * 0.6f, color, 0, width);
 				drawList->AddLine(startDot, endDot, color, width);
@@ -399,9 +395,9 @@ void Toastr::Notification::renderIcon(Context ctx) {
 //
 
 void Toastr::Notification::renderLeftBar(Context ctx) {
-	auto pos = ImGui::GetWindowPos();
-	auto size = ImGui::GetWindowSize();
-	auto bottomRight = pos + ImVec2(ctx.glyphSize.x * 0.5f, size.y);
+	const auto pos = ImGui::GetWindowPos();
+	const auto size = ImGui::GetWindowSize();
+	const auto bottomRight = pos + ImVec2(ctx.glyphSize.x * 0.5f, size.y);
 
 	ImGui::GetWindowDrawList()->AddRectFilled(
 		pos,
@@ -432,7 +428,7 @@ void Toastr::Notification::renderMessage(Context ctx, float width) {
 
 void Toastr::Notification::renderButton(Context ctx, ImVec2 right) {
 	// render a button to close the notification (if required)
-	auto buttonWidth = ctx.glyphSize.x + ctx.framePadding.x * 2.0f;
+	const auto buttonWidth = ctx.glyphSize.x + ctx.framePadding.x * 2.0f;
 	ImGui::SetCursorScreenPos(right - ImVec2(buttonWidth, 0.0f));
 
 	// (can't use ImGui::IsWindowHovered as it won't let ImGui::Button catch clicks for some reason)
@@ -452,8 +448,8 @@ void Toastr::Notification::renderButton(Context ctx, ImVec2 right) {
 //
 
 void Toastr::Notification::renderProgressBar(Context ctx) {
-	auto pos = ImGui::GetWindowPos();
-	auto size = ImGui::GetWindowSize();
+	const auto pos = ImGui::GetWindowPos();
+	const auto size = ImGui::GetWindowSize();
 	float progress;
 
 	if (phase == Phase::fadeIn) {
@@ -466,9 +462,9 @@ void Toastr::Notification::renderProgressBar(Context ctx) {
 		progress = 0.0f;
 	}
 
-	auto right = ImVec2(pos.x + progress * size.x, pos.y + size.y);
-	auto left = ImVec2(pos.x, right.y - ctx.highDpiScale * 2.0f);
-	auto color = ImGui::GetColorU32(getIconBackgroundColor(ctx), alpha * 0.5f);
+	const auto right = ImVec2(pos.x + progress * size.x, pos.y + size.y);
+	const auto left = ImVec2(pos.x, right.y - ctx.highDpiScale * 2.0f);
+	const auto color = ImGui::GetColorU32(getIconBackgroundColor(ctx), alpha * 0.5f);
 	ImGui::GetWindowDrawList()->AddRectFilled(left, right, color, ctx.windowRounding);
 }
 
