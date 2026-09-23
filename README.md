@@ -1,8 +1,8 @@
 <div align="center">
 
-![MacOS status](https://img.shields.io/github/actions/workflow/status/goossens/ImGuiToastr/macos.yml?branch=master&label=MacOS&style=for-the-badge)
-![Linux status](https://img.shields.io/github/actions/workflow/status/goossens/ImGuiToastr/linux.yml?branch=master&label=Linux&style=for-the-badge)
-![Windows status](https://img.shields.io/github/actions/workflow/status/goossens/ImGuiToastr/windows.yml?branch=master&label=Windows&style=for-the-badge)
+![MacOS status](https://img.shields.io/github/actions/workflow/status/goossens/ImGuiToastr/macos.yml?branch=main&label=MacOS&style=for-the-badge)
+![Linux status](https://img.shields.io/github/actions/workflow/status/goossens/ImGuiToastr/linux.yml?branch=main&label=Linux&style=for-the-badge)
+![Windows status](https://img.shields.io/github/actions/workflow/status/goossens/ImGuiToastr/windows.yml?branch=main&label=Windows&style=for-the-badge)
 <br/>
 ![Repo size](https://img.shields.io/github/repo-size/goossens/ImGuiToastr?style=for-the-badge)
 ![Repo activity](https://img.shields.io/github/commit-activity/m/goossens/ImGuiToastr?label=Commits&style=for-the-badge)
